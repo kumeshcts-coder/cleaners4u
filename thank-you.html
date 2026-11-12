@@ -227,9 +227,8 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
       <a class="award" href="bond-back-guarantee/"><span class="shield" aria-hidden="true"><svg><use href="#i-shield"/></svg></span><div>Bond-back guarantee<small>Re-clean free within 72 hours</small></div></a>
       <div class="award"><img src="assets/badges/wom-2024.webp" width="77" height="76" alt="Word of Mouth Service Award 2024"><div>Service Award 2024<small>Word of Mouth</small></div></div>
       <!-- accreditation badges go here once supplied -->
-      <!-- cleaning stats: replace [X] with the cleans-completed figure once supplied -->
       <div class="stats">
-        <div><b>[X]+</b><span>cleans completed</span></div>
+        <div><b>15,000+</b><span>cleans completed</span></div>
         <div><b>70+</b><span>teams in our network</span></div>
       </div>
     </div>
@@ -238,17 +237,13 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
   </div>
 </section>
 
-<section class="sec soft" aria-labelledby="revH">
+<!-- Review cards come from assets/reviews.js (real Google reviews about cleaning only). This section stays hidden while that list is empty. -->
+<section class="sec soft" id="revSec" aria-labelledby="revH" hidden>
   <div class="wrap">
     <div class="rhead">
       <h2 class="sec-h" id="revH">What our customers say</h2>
     </div>
-    <!-- Shared Google reviews; put real reviews that mention cleaning first once supplied. -->
-    <div class="rcards">
-      <figure class="rc"><span class="stars" aria-label="5 stars">★★★★★</span><svg class="gl" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-g"/></svg><blockquote>“From packing to final delivery, they handled everything professionally. I booked online and got a call within minutes.”</blockquote><figcaption><b>Priya R.</b> · Brunswick</figcaption></figure>
-      <figure class="rc"><span class="stars" aria-label="5 stars">★★★★★</span><svg class="gl" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-g"/></svg><blockquote>“Smoothest move I've ever had. The team was on time, super careful with all our stuff, and packed everything efficiently.”</blockquote><figcaption><b>Jessica P.</b> · Richmond</figcaption></figure>
-      <figure class="rc"><span class="stars" aria-label="5 stars">★★★★★</span><svg class="gl" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-g"/></svg><blockquote>“We used them for our office relocation and everything went perfectly. No delays, no stress.”</blockquote><figcaption><b>Mark S.</b> · Southbank</figcaption></figure>
-    </div>
+    <div class="rcards" id="rcards"></div>
   </div>
 </section>
 
@@ -281,10 +276,21 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
   </div>
 </footer>
 
+<script src="assets/reviews.js"></script>
 <script>
 (function () {
   'use strict';
   var $ = function (s, r) { return (r || document).querySelector(s); };
+
+  /* 5. Testimonials: real cleaning reviews from assets/reviews.js */
+  var R = window.C4U_REVIEWS || [];
+  if (R.length) {
+    var esc = function (s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+    $('#rcards').innerHTML = R.map(function (r) {
+      return '<figure class="rc"><span class="stars" aria-label="5 stars">★★★★★</span><svg class="gl" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-g"/></svg><blockquote>“' + esc(r.text) + '”</blockquote><figcaption><b>' + esc(r.name) + '</b>' + (r.suburb ? ' · ' + esc(r.suburb) : '') + '</figcaption></figure>';
+    }).join('');
+    $('#revSec').hidden = false;
+  }
   window.dataLayer = window.dataLayer || [];
   function track(e, d) { d = d || {}; d.event = e; window.dataLayer.push(d); }
   document.addEventListener('click', function (e) {

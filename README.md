@@ -29,10 +29,10 @@ Then open http://localhost:8080. On localhost or `file:` the forms skip the serv
 ## Before launch (from the brief's [bracketed] items)
 
 - **Phone number:** all call links use the Cleaners4u number 03 7042 9778 (`tel:0370429778`). To change it, replace both forms in every `.html` file.
-- **Before and after:** the "before" images are edited stock photos (placeholders). Replace with real job photos: `assets/img/ba-*-before.webp` / `ba-*-after.webp`, 1000×750.
-- **Reviews:** the review cards are the shared Removalists4u reviews. Swap in real Google reviews that mention cleaning, the bond or the inspection first.
-- **Stats:** "[X]+ cleans completed" needs the figure (index.html and thank-you.html).
+- **Before and after:** four side-by-side pairs of separate free Pexels photos (sink, cooktop, bathroom, shower tiles), not Cleaners4u jobs. Swap in real job photos when available (`assets/img/ba-*-before.webp` / `ba-*-after.webp`, 800×600) and put back the brief's heading "Real results from Melbourne homes."
+- **Reviews:** add real Google reviews about cleaning to `assets/reviews.js`. The review cards stay hidden until it has entries (the moving reviews were removed).
+- **Stats:** 15,000+ cleans completed (index.html and thank-you.html).
 - **FAQ:** answers in grey italics need confirming (being home, equipment, deposit and cancellation).
-- **Footer and terms page:** business name, ABN, address, email; the `[confirm]` items on the guarantee page; lawyer review. Keep section 7 word for word.
+- **Footer and terms page:** business name, ABN, address and email for the footer; lawyer review of the guarantee page (keep section 5 word for word).
 - **Other:** accreditation badges, 10% discount terms, general-clean scope, cleaning suburbs, "On cleaning day" process, partner logo check, privacy policy link (currently the Removalists4u one).
 - **Backend:** step 1 and step 2 post to `/insert.php` like Removalists4u. The new cleaning fields (listed in the comment in `additional-details.html`) need adding to the CRM; until then everything is also summarised into the `info` field. A lead that adds a move is flagged `combined_booking=1` and must reach the moving sales team.

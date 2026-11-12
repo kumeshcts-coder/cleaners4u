@@ -121,6 +121,8 @@ html[data-h=moveout] .h1v.o,html[data-h=movein] .h1v.i{display:inline}
 .strip{padding:72px 0 80px;background:var(--soft)}
 .strip .top{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:32px}
 .strip h2{font-size:32px}
+.strip:has(#rcards[hidden]){padding:48px 0}
+.strip:has(#rcards[hidden]) .top{margin-bottom:0}
 .rcards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .rc{position:relative;background:#fff;border:1px solid var(--line);border-radius:10px;padding:28px 28px 24px;display:flex;flex-direction:column;gap:14px}
 .rc .gl{position:absolute;top:26px;right:26px;width:22px;height:22px}
@@ -155,16 +157,12 @@ html[data-h=moveout] .h1v.o,html[data-h=movein] .h1v.i{display:inline}
 /* before and after */
 .ba-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px}
 .ba{margin:0}
-.ba .frame{position:relative;aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:var(--soft);user-select:none;touch-action:pan-y;--p:50%}
+.ba .pair{display:grid;grid-template-columns:1fr 1fr;gap:6px;border-radius:10px;overflow:hidden}
+.ba .ph{position:relative;aspect-ratio:4/3;background:var(--soft)}
 .ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.ba .bef{clip-path:inset(0 calc(100% - var(--p)) 0 0)}
-.ba .handle{position:absolute;top:0;bottom:0;left:var(--p);width:3px;margin-left:-1.5px;background:#fff;box-shadow:0 0 0 1px rgba(20,35,63,.15);pointer-events:none}
-.ba .handle::after{content:"";position:absolute;top:50%;left:50%;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23223869' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6l-6 6 6 6M15 6l6 6-6 6'/%3E%3C/svg%3E") center/22px no-repeat;box-shadow:0 6px 18px -6px rgba(20,35,63,.45)}
-.ba .tag{position:absolute;top:14px;padding:4px 10px;border-radius:4px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;pointer-events:none}
-.ba .tag.b{left:14px;background:rgba(20,35,63,.78);color:#fff}
-.ba .tag.a{right:14px;background:var(--mint);color:var(--ink)}
-.ba input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize}
-.ba input:focus-visible~.handle::after{outline:3px solid var(--navy);outline-offset:2px}
+.ba .tag{position:absolute;top:12px;left:12px;padding:4px 10px;border-radius:4px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.ba .tag.b{background:rgba(20,35,63,.8);color:#fff}
+.ba .tag.a{background:var(--mint);color:var(--ink)}
 .ba figcaption{margin-top:12px;font-weight:600;color:var(--ink)}
 
 /* how */
@@ -336,6 +334,8 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
   .ifoot .btn{width:100%}
   .pull blockquote{font-size:19px}
   .ba-grid{grid-template-columns:1fr;gap:22px}
+  .ba .pair{gap:4px}
+  .ba .tag{top:8px;left:8px;padding:3px 8px;font-size:11px}
   .how .wrap{gap:36px}
   .how h2{margin-bottom:28px}
   .steps li{grid-template-columns:44px 1fr;gap:16px;padding-bottom:24px}
@@ -506,12 +506,8 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
       <div class="g"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#i-g"/></svg><div><h2>4.8★ from 283 Google reviews</h2><small><span class="stars" aria-label="Rated 4.8 out of 5">★★★★★</span></small></div></div>
       <a class="btn btn-mint d-only" href="#quote">Get my free quote</a>
     </div>
-    <!-- Shared Google reviews from Removalists4u. Swap in real reviews that mention cleaning, the bond or the inspection first (name, suburb, stars) once supplied. Don't write reviews. -->
-    <div class="rcards">
-      <figure class="rc"><span class="stars" aria-label="5 stars">★★★★★</span><svg class="gl" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-g"/></svg><blockquote>“From packing to final delivery, they handled everything professionally. I booked online and got a call within minutes.”</blockquote><figcaption><b>Priya R.</b> · Brunswick</figcaption></figure>
-      <figure class="rc"><span class="stars" aria-label="5 stars">★★★★★</span><svg class="gl" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-g"/></svg><blockquote>“Smoothest move I've ever had. The team was on time, super careful with all our stuff, and packed everything efficiently.”</blockquote><figcaption><b>Jessica P.</b> · Richmond</figcaption></figure>
-      <figure class="rc"><span class="stars" aria-label="5 stars">★★★★★</span><svg class="gl" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-g"/></svg><blockquote>“We used them for our office relocation and everything went perfectly. No delays, no stress.”</blockquote><figcaption><b>Mark S.</b> · Southbank</figcaption></figure>
-    </div>
+    <!-- Review cards come from assets/reviews.js (shared with the thank-you page). Only real Google reviews about cleaning go there; the cards stay hidden while it's empty. -->
+    <div class="rcards" id="rcards" hidden></div>
   </div>
 </section>
 
@@ -542,10 +538,9 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
         <p class="pline">Your price depends on your home's size and condition, so we confirm it in one clear quote before you book.</p>
         <a class="btn btn-navy" href="#quote">Get my free quote</a>
       </div>
-      <!-- pull quote: swap for a real cleaning review once supplied -->
       <figure class="pull">
-        <blockquote>“I booked online and got a call within minutes.”</blockquote>
-        <figcaption>Priya R., Brunswick</figcaption>
+        <blockquote>If your agent flags anything from your clean, tell us within 72 hours and we'll re-clean it for free.</blockquote>
+        <figcaption><a class="link" href="bond-back-guarantee/">Our bond-back guarantee</a></figcaption>
       </figure>
     </div>
   </div>
@@ -553,15 +548,15 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
 
 <section class="sec" id="results">
   <div class="wrap">
-    <div class="shead"><span class="sdiv" aria-hidden="true"></span><span class="eyebrow">Before and after</span><h2>Real results from Melbourne homes.</h2></div>
-    <!-- SAMPLE IMAGES: the "before" photos are edited stock photos, used only as placeholders.
-         Replace every pair with real before-and-after photos from Cleaners4u jobs (our cleaning process takes them on every job) before launch.
-         Files: assets/img/ba-[kitchen|oven|bathroom|carpet]-[before|after].webp, 1000×750. -->
+    <div class="shead"><span class="sdiv" aria-hidden="true"></span><span class="eyebrow">Before and after</span><h2>The difference a proper clean makes.</h2></div>
+    <!-- The brief's heading "Real results from Melbourne homes." goes back in once these are real Cleaners4u job photos. -->
+    <!-- Side-by-side pairs of two separate photos (free Pexels stock, not Cleaners4u jobs).
+         Swap in real before-and-after photos from Cleaners4u jobs when available: assets/img/ba-[name]-[before|after].webp, 800×600. -->
     <div class="ba-grid">
-      <figure class="ba"><div class="frame"><img src="assets/img/ba-kitchen-after.webp" width="1000" height="750" alt="Kitchen benchtops after the clean" loading="lazy" decoding="async"><img class="bef" src="assets/img/ba-kitchen-before.webp" width="1000" height="750" alt="Kitchen benchtops before the clean" loading="lazy" decoding="async"><span class="tag b">Before</span><span class="tag a">After</span><input type="range" min="0" max="100" value="50" aria-label="Kitchen: drag to compare before and after"><span class="handle"></span></div><figcaption>Kitchen</figcaption></figure>
-      <figure class="ba"><div class="frame"><img src="assets/img/ba-oven-after.webp" width="1000" height="750" alt="Oven interior after the clean" loading="lazy" decoding="async"><img class="bef" src="assets/img/ba-oven-before.webp" width="1000" height="750" alt="Oven interior before the clean" loading="lazy" decoding="async"><span class="tag b">Before</span><span class="tag a">After</span><input type="range" min="0" max="100" value="50" aria-label="Oven: drag to compare before and after"><span class="handle"></span></div><figcaption>Oven</figcaption></figure>
-      <figure class="ba"><div class="frame"><img src="assets/img/ba-bathroom-after.webp" width="1000" height="750" alt="Shower screen after the clean" loading="lazy" decoding="async"><img class="bef" src="assets/img/ba-bathroom-before.webp" width="1000" height="750" alt="Shower screen before the clean" loading="lazy" decoding="async"><span class="tag b">Before</span><span class="tag a">After</span><input type="range" min="0" max="100" value="50" aria-label="Bathroom: drag to compare before and after"><span class="handle"></span></div><figcaption>Bathroom</figcaption></figure>
-      <figure class="ba"><div class="frame"><img src="assets/img/ba-carpet-after.webp" width="1000" height="750" alt="Carpet after steam cleaning" loading="lazy" decoding="async"><img class="bef" src="assets/img/ba-carpet-before.webp" width="1000" height="750" alt="Carpet before steam cleaning" loading="lazy" decoding="async"><span class="tag b">Before</span><span class="tag a">After</span><input type="range" min="0" max="100" value="50" aria-label="Carpet: drag to compare before and after"><span class="handle"></span></div><figcaption>Carpet</figcaption></figure>
+      <figure class="ba"><div class="pair"><div class="ph"><img src="assets/img/ba-sink-before.webp" width="800" height="600" alt="Kitchen sink full of greasy dishes before the clean" loading="lazy" decoding="async"><span class="tag b">Before</span></div><div class="ph"><img src="assets/img/ba-sink-after.webp" width="800" height="600" alt="Clean, empty kitchen sink and benchtop after the clean" loading="lazy" decoding="async"><span class="tag a">After</span></div></div><figcaption>Kitchen sink</figcaption></figure>
+      <figure class="ba"><div class="pair"><div class="ph"><img src="assets/img/ba-cooktop-before.webp" width="800" height="600" alt="Stained gas cooktop before the clean" loading="lazy" decoding="async"><span class="tag b">Before</span></div><div class="ph"><img src="assets/img/ba-cooktop-after.webp" width="800" height="600" alt="Wiped-down gas cooktop after the clean" loading="lazy" decoding="async"><span class="tag a">After</span></div></div><figcaption>Cooktop</figcaption></figure>
+      <figure class="ba"><div class="pair"><div class="ph"><img src="assets/img/ba-bathroom-before.webp" width="800" height="600" alt="Grimy bathroom basin before the clean" loading="lazy" decoding="async"><span class="tag b">Before</span></div><div class="ph"><img src="assets/img/ba-bathroom-after.webp" width="800" height="600" alt="Bright, clean bathroom with vanity and shower after the clean" loading="lazy" decoding="async"><span class="tag a">After</span></div></div><figcaption>Bathroom</figcaption></figure>
+      <figure class="ba"><div class="pair"><div class="ph"><img src="assets/img/ba-tiles-before.webp" width="800" height="600" alt="Mouldy grout on shower tiles before the clean" loading="lazy" decoding="async"><span class="tag b">Before</span></div><div class="ph"><img src="assets/img/ba-tiles-after.webp" width="800" height="600" alt="Clean white shower tiles after the clean" loading="lazy" decoding="async"><span class="tag a">After</span></div></div><figcaption>Shower tiles</figcaption></figure>
     </div>
   </div>
 </section>
@@ -594,9 +589,8 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
   <div class="wrap">
     <span class="eyebrow">Why choose Cleaners4u</span>
     <h2>Your bond, in careful hands.</h2>
-    <!-- Stats: "cleans completed" figure to be supplied; replace [X] (and add data-count / data-suffix for the count-up). -->
     <div class="nums">
-      <div class="num"><svg aria-hidden="true"><use href="#i-sparkle"/></svg><b>[X]+</b><span>cleans completed</span></div>
+      <div class="num"><svg aria-hidden="true"><use href="#i-sparkle"/></svg><b data-count="15000" data-suffix="+">15,000+</b><span>cleans completed</span></div>
       <div class="num"><svg aria-hidden="true"><use href="#i-users"/></svg><b data-count="70" data-suffix="+">70+</b><span>teams in our network</span></div>
       <div class="num"><svg aria-hidden="true"><use href="#i-star"/></svg><b>4.8★</b><span>Google rating</span></div>
       <div class="num"><svg aria-hidden="true"><use href="#i-clock"/></svg><b>2 min</b><span>call-back on every enquiry</span></div>
@@ -696,6 +690,7 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
 
 <div class="callbar" id="callbar" data-loc="sticky"><span class="avail">Our team is available now</span><a class="btn btn-mint" href="tel:0370429778"><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg>Call 03 7042 9778</a></div>
 
+<script src="assets/reviews.js"></script>
 <script>
 (function(){
   var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
@@ -741,12 +736,13 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
     });
   });
 
-  // Before and after: the range input drives the split, so it works with touch, mouse and keyboard.
-  $$('.ba .frame').forEach(function(fr){
-    var r=$('input',fr);
-    r.addEventListener('input',function(){fr.style.setProperty('--p',r.value+'%')});
-    r.addEventListener('change',function(){track('before_after_slide',{pair:$('figcaption',fr.parentNode).textContent})},{once:true});
-  });
+  // Review cards: real Google reviews about cleaning, from assets/reviews.js. Hidden while there are none.
+  var R=window.C4U_REVIEWS||[];
+  if(R.length){
+    var esc=function(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML};
+    $('#rcards').innerHTML=R.slice(0,3).map(function(r){return '<figure class="rc"><span class="stars" aria-label="5 stars">★★★★★</span><svg class="gl" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-g"/></svg><blockquote>“'+esc(r.text)+'”</blockquote><figcaption><b>'+esc(r.name)+'</b>'+(r.suburb?' · '+esc(r.suburb):'')+'</figcaption></figure>'}).join('');
+    $('#rcards').hidden=false;
+  }
 
   // Phone check: Australian numbers only, digits counted after removing spaces, brackets and dashes.
   // (The old pattern attribute was invalid in current browsers, so any text passed.)
