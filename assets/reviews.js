@@ -4,8 +4,8 @@
      { name: 'First name L.', suburb: 'Suburb', text: 'Review text as written on Google.' },
    Real reviews show the Google logo.
 
-   SAMPLE reviews (sample: true) are placeholder text for the layout only. They show a visible "Sample review" label
-   and no Google logo, so visitors don't take them for real reviews. Delete them all once real reviews are added.
+   SAMPLE reviews (sample: true) are placeholder text for the layout only. They show no Google logo, and while any
+   sample is listed the pages show one small line under the cards: "Example reviews shown for illustration." Delete them all once real reviews are added.
 */
 window.C4U_REVIEWS = [
   { sample: true, name: 'Emily T.', suburb: 'Melbourne, VIC', text: 'Excellent end-of-lease cleaning service! They did a thorough job, leaving the property looking as good as new. Very happy with the results and the friendly customer service.' },
