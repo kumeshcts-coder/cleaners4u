@@ -28,7 +28,7 @@ Then open http://localhost:8080. On localhost or `file:` the forms skip the serv
 
 ## Before launch (from the brief's [bracketed] items)
 
-- **Phone number:** every call link still uses the Removalists4u number 03 8348 1703. Replace `0383481703` and `03 8348 1703` in all `.html` files with the cleaning tracking number.
+- **Phone number:** all call links use the Cleaners4u number 03 7042 9778 (`tel:0370429778`). To change it, replace both forms in every `.html` file.
 - **Before and after:** the "before" images are edited stock photos (placeholders). Replace with real job photos: `assets/img/ba-*-before.webp` / `ba-*-after.webp`, 1000×750.
 - **Reviews:** the review cards are the shared Removalists4u reviews. Swap in real Google reviews that mention cleaning, the bond or the inspection first.
 - **Stats:** "[X]+ cleans completed" needs the figure (index.html and thank-you.html).
