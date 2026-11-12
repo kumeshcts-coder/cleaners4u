@@ -126,6 +126,7 @@ html[data-h=moveout] .h1v.o,html[data-h=movein] .h1v.i{display:inline}
 .rcards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .rc{position:relative;background:#fff;border:1px solid var(--line);border-radius:10px;padding:28px 28px 24px;display:flex;flex-direction:column;gap:14px}
 .rc .gl{position:absolute;top:26px;right:26px;width:22px;height:22px}
+.rc .smp{position:absolute;top:22px;right:22px;padding:3px 9px;border-radius:20px;background:var(--soft);border:1px solid var(--line);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
 .rc blockquote{font-size:18px;line-height:1.5;color:var(--ink);font-weight:500}
 .rc figcaption{margin-top:auto;font-size:15px;color:var(--muted)}
 .rc figcaption b{color:var(--ink);font-weight:600}
@@ -740,7 +741,7 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
   var R=window.C4U_REVIEWS||[];
   if(R.length){
     var esc=function(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML};
-    $('#rcards').innerHTML=R.slice(0,3).map(function(r){return '<figure class="rc"><span class="stars" aria-label="5 stars">★★★★★</span><svg class="gl" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-g"/></svg><blockquote>“'+esc(r.text)+'”</blockquote><figcaption><b>'+esc(r.name)+'</b>'+(r.suburb?' · '+esc(r.suburb):'')+'</figcaption></figure>'}).join('');
+    $('#rcards').innerHTML=R.slice(0,3).map(function(r){return '<figure class="rc"><span class="stars" aria-label="5 stars">★★★★★</span>'+(r.sample?'<span class="smp">Sample review</span>':'<svg class="gl" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-g"/></svg>')+'<blockquote>“'+esc(r.text)+'”</blockquote><figcaption><b>'+esc(r.name)+'</b>'+(r.suburb?' · '+esc(r.suburb):'')+'</figcaption></figure>'}).join('');
     $('#rcards').hidden=false;
   }
 
