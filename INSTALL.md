@@ -11,7 +11,9 @@ visitor's PHP session) and sends the detailed enquiry email and the customer's f
 | `config.sample.php` | Template for the single configuration file. Copy to `config.php`. |
 | `insert.php` | Form endpoint for both steps (JSON in and out). |
 | `form-token.php` | Gives the form its CSRF token (the HTML pages are static and cached). |
+| `places-key.php` | Gives step 2 the Google Maps browser key from `config.php`. |
 | `assets/forms.js` | Front-end helper: fetches the token, posts the form, reads the JSON reply. |
+| `assets/places.js` | Google address and suburb suggestions for the step 2 suburb boxes. |
 | `app/src/` | PHP classes: validation, database, security, PHPMailer, email templates. |
 | `database/schema.sql` | Creates the `leads` table. |
 | `assets/email/logo.png` | Logo used in the emails (email apps don't show SVG). |
@@ -61,6 +63,17 @@ Fill in:
 - `log_dir`: keep it outside the public folder (default `/home/cleaners4u/logs/forms`)
 
 `config.php` is git-ignored, and deploys never overwrite it.
+
+**Address suggestions (optional):** the step 2 "Suburb" and "Moving to" boxes show Google address and suburb
+suggestions (with the "powered by Google" footer) when `google.maps_api_key` is set. To get a key:
+
+1. In [Google Cloud Console](https://console.cloud.google.com/) create or pick a project with billing turned on.
+2. Enable **Maps JavaScript API** and **Places API (New)**.
+3. Create an API key under **APIs & Services → Credentials**. Restrict it to **Websites** `https://cleaners4u.com.au/*`
+   and `https://www.cleaners4u.com.au/*`, and to those two APIs.
+4. Put the key in `config.php` → `google` → `maps_api_key`.
+
+Without a key (or if Google can't be reached) the boxes fall back to the built-in Melbourne suburb list.
 
 **Email deliverability:** `from_email` must be an address your SMTP account is allowed to send as, and the domain
 should have SPF, DKIM and DMARC records for that provider. Otherwise emails may land in spam or be rejected.

@@ -46,6 +46,13 @@ return [
     // Where new-lead and enquiry emails go. One address, or several separated by commas.
     'admin_email' => '',
 
+    // Google Maps browser key for the address/suburb suggestions on step 2 (Maps JavaScript API + Places API (New)).
+    // Restrict it in Google Cloud to the website https://cleaners4u.com.au/* and to those two APIs.
+    // Leave empty to use the built-in Melbourne suburb list instead.
+    'google' => [
+        'maps_api_key' => '',
+    ],
+
     // Spam, duplicate and abuse protection.
     'security' => [
         'allowed_hosts'             => ['cleaners4u.com.au', 'www.cleaners4u.com.au'],

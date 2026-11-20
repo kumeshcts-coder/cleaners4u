@@ -465,6 +465,7 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
 
 <script src="assets/suburbs.js"></script>
 <script src="assets/forms.js"></script>
+<script src="assets/places.js"></script>
 <script>
 (function () {
   'use strict';
@@ -492,6 +493,8 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
   /* Covered suburbs, for suggestions in the suburb boxes. */
   $('#subs').innerHTML = (window.C4U_SUBURBS || []).map(function (s) { return '<option value="' + s + '">'; }).join('');
   if (lead.suburb) $('#suburb').value = lead.suburb;
+  /* Google address suggestions (key in config.php); without one the list above stays. */
+  if (window.C4UPlaces) C4UPlaces.attach(['#suburb', '#otherSub']);
 
   /* Visitors from a move-out or move-in ad get that clean pre-selected; otherwise nothing is. */
   var h = q.get('h') || lead.h || '';
