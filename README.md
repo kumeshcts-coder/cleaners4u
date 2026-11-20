@@ -11,7 +11,7 @@ Melbourne end-of-lease cleaning landing page, quote form and thank-you page, bui
 | `thank-you.html` | Thank-you page: clean at a glance, next steps, trust section, last-chance extras. |
 | `bond-back-guarantee/index.html` | Bond-back guarantee terms (draft for legal review). |
 
-Static HTML, CSS and JS only; no build step. To preview locally:
+Static HTML, CSS and JS with a small PHP backend for the quote form (setup in [INSTALL.md](INSTALL.md)). To preview the pages locally:
 
 ```bash
 python -m http.server 8080
@@ -35,4 +35,4 @@ Then open http://localhost:8080. On localhost or `file:` the forms skip the serv
 - **FAQ:** answers in grey italics need confirming (being home, equipment, deposit and cancellation).
 - **Footer and terms page:** business name, ABN, address and email for the footer; lawyer review of the guarantee page (keep section 5 word for word).
 - **Other:** accreditation badges, 10% discount terms, general-clean scope, cleaning suburbs, "On cleaning day" process, partner logo check, privacy policy link (currently the Removalists4u one).
-- **Backend:** step 1 and step 2 post to `/insert.php` like Removalists4u. The new cleaning fields (listed in the comment in `additional-details.html`) need adding to the CRM; until then everything is also summarised into the `info` field. A lead that adds a move is flagged `combined_booking=1` and must reach the moving sales team.
+- **Backend:** both steps post to `/insert.php` (PHP 8, MySQL, PHPMailer). Step 1 creates the lead and emails the team and the customer; step 2 updates the same lead through the visitor's session and sends the detailed enquiry. A lead that adds a move is flagged `combined_booking=1`, and its admin email is marked COMBINED BOOKING so it reaches the moving sales team. Setup, config and deployment: [INSTALL.md](INSTALL.md).

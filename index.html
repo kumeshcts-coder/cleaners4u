@@ -464,12 +464,12 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
 
     <div class="qwrap">
     <div class="q" id="quote" data-loc="form">
-      <!-- Step 1 of 2. In production this posts to insert.php, which saves the lead to the CRM straight away (so sales can call within 2 minutes) and redirects to additional-details?id=[lead id]. The static preview skips the post and opens step 2 directly. -->
+      <!-- Step 1 of 2. Posts to insert.php (via assets/forms.js), which validates, saves the lead, emails the team (so sales can call within 2 minutes) and the customer, and returns the lead reference for step 2. The static preview skips the post and opens step 2 directly. -->
       <form id="qf" action="/insert.php" method="post" novalidate>
         <h2>Get your free cleaning quote in 60 seconds</h2>
         <div class="prog"><span>Step 1 of 2</span><span class="bar"><i></i></span></div>
         <input class="hp" type="text" name="extra_field" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <!-- same hidden fields the main site's form sends to insert.php -->
+        <!-- tracking fields saved with the lead (GCLID, page URL, device); the CSRF token is added on submit -->
         <input type="hidden" name="form_timestamp" id="form_timestamp">
         <input type="hidden" name="device_id" id="device_id">
         <input type="hidden" name="gclid" id="gclid">
@@ -693,6 +693,7 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
 <div class="callbar" id="callbar" data-loc="sticky"><span class="avail">Our team is available now</span><a class="btn btn-mint" href="tel:0370429778"><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg>Call 03 7042 9778</a></div>
 
 <script src="assets/reviews.js"></script>
+<script src="assets/forms.js"></script>
 <script>
 (function(){
   var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
@@ -775,29 +776,25 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
     if(/github\.io$|^localhost$|^127\.0\.0\.1$/.test(location.hostname)||location.protocol==='file:'){
       location.href='additional-details.html?id=PREVIEW-'+Date.now().toString().slice(-6);return;
     }
-    // Live: post to insert.php (saves the lead, sends the emails, pushes to the CRM).
-    // insert.php redirects to /additional-details?[lead id]; we read the id and open this page's step 2 instead.
+    // Live: post to insert.php (validates, saves the lead, emails the team and the customer) and open step 2 with the lead reference.
     var btn=$('button[type=submit]',f),lbl=btn.textContent,err=$('#qfErr');
     err.hidden=true;btn.disabled=true;btn.textContent='Sending…';
-    function fail(){
-      err.textContent='Sorry, we couldn’t send your details. Please try again or call 03 7042 9778.';
+    function fail(msg){
+      err.textContent=msg||'Sorry, we couldn’t send your details. Please try again or call 03 7042 9778.';
       err.hidden=false;btn.disabled=false;btn.textContent=lbl;
     }
     deviceReady.then(function(){
       var fd=new FormData(f);
       fd.append('request','');
-      fd.forEach(function(v,k){if(typeof v==='string')fd.set(k,safe(v))});
-      return fetch('/insert.php',{method:'POST',body:fd,credentials:'same-origin'});
-    }).then(function(r){
-      var m=r.ok&&r.url.match(/\/additional-details\?(?:id=)?(\d+)/);
-      if(!m)return fail();
-      location.href='additional-details.html?id='+m[1];
-    }).catch(fail);
+      return C4U.post(fd);
+    }).then(function(d){
+      if(!d.ok||!d.lead_ref)return fail(d.message);
+      location.href='additional-details.html?id='+encodeURIComponent(d.lead_ref);
+    }).catch(function(){fail()});
   });
   window.addEventListener('pageshow',function(){var b=$('button[type=submit]',f);b.disabled=false;b.textContent='Continue to step 2'});
-
-  // insert.php builds its SQL from raw text, so a straight apostrophe or backslash (e.g. O'Brien) would make it fail.
-  function safe(v){return v.replace(/'/g,'’').replace(/\\/g,'/')}
+  // Get the form's security token as soon as someone starts typing, so the submit is quick.
+  f.addEventListener('focusin',function(){if(!/github\.io$|^localhost$|^127\.0\.0\.1$/.test(location.hostname)&&location.protocol!=='file:')C4U.warm()},{once:true});
 
   // Hidden fields, filled the same way as the main site's form.
   (function(){

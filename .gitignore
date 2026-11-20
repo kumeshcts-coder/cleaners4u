@@ -1,3 +1,6 @@
 .claude/
 .DS_Store
 Thumbs.db
+# Form backend: real credentials and Composer packages stay out of git
+/config.php
+/vendor/

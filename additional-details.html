@@ -254,10 +254,10 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
 
 <section class="body">
   <div class="wrap">
-    <!-- Production posts to insert.php with the lead id from step 1. The cleaning fields below (clean_type, clean_date, suburb, property_type,
-         bedrooms, bathrooms, addons[], carpet_*, windows_count, walls_count, notes, move_*, combined_booking, utilities[], utility_consent*)
-         need confirming with the CRM before go-live; everything is also summarised into the existing info field.
-         A lead that adds a move must also reach the moving sales team, flagged as a combined booking (combined_booking=1).
+    <!-- Posts to insert.php (via assets/forms.js). The server finds the step 1 lead through the visitor's session and updates the same
+         record with these fields (clean_type, clean_date, suburb, property_type, bedrooms, bathrooms, addons[], carpet_*, windows_count,
+         walls_count, notes, move_*, combined_booking, utilities[], utility_consent*), then emails the team and the customer.
+         A lead that adds a move is flagged as a combined booking (combined_booking=1) in the admin email.
          On the static preview the script stops the post and opens thank-you.html instead. -->
     <form class="d-form" id="detailsForm" action="/insert.php" method="post" novalidate>
       <input type="hidden" name="id" value="">
@@ -289,7 +289,7 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
         <legend class="sec-h"><span>2</span>Your property</legend>
         <label class="field" id="fSuburb">
           <span class="lbl">Suburb</span>
-          <input class="sub-in" type="text" name="suburb" id="suburb" list="subs" autocomplete="off" placeholder="Start typing your suburb">
+          <input class="sub-in" type="text" name="suburb" id="suburb" list="subs" autocomplete="off" maxlength="80" placeholder="Start typing your suburb">
           <span class="err" hidden>Enter the suburb of the property.</span>
         </label>
         <div class="field" id="fProp">
@@ -350,7 +350,7 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
         </div>
         <label class="field">
           <span class="lbl">Anything else we should know? <span class="opt-tag">(optional)</span></span>
-          <textarea name="notes" rows="3" placeholder="e.g. heavy oven build-up, pets, access or parking, inspection date"></textarea>
+          <textarea name="notes" rows="3" maxlength="1000" placeholder="e.g. heavy oven build-up, pets, access or parking, inspection date"></textarea>
         </label>
       </fieldset>
 
@@ -380,7 +380,7 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
             <!-- Home size reuses the bedrooms already given. -->
             <div class="mfields" id="mFields" hidden>
               <label><span class="lbl">Moving date <span class="opt-tag">(change if different)</span></span><input type="date" name="move_date" id="moveDate"></label>
-              <label><span class="lbl" id="otherLbl">Moving to</span><input type="text" name="move_other_suburb" id="otherSub" list="subs" autocomplete="off" placeholder="Suburb"></label>
+              <label><span class="lbl" id="otherLbl">Moving to</span><input type="text" name="move_other_suburb" id="otherSub" list="subs" autocomplete="off" maxlength="80" placeholder="Suburb"></label>
             </div>
             <!-- small print once supplied: <p class="small">[10% discount terms]</p> -->
           </div>
@@ -446,6 +446,7 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
 <datalist id="subs"></datalist>
 
 <script src="assets/suburbs.js"></script>
+<script src="assets/forms.js"></script>
 <script>
 (function () {
   'use strict';
@@ -604,10 +605,6 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
     var val = function (n) { return (form.querySelector('[name="' + n + '"]:checked') || {}).value || ''; };
     var addons = $$('[name="addons[]"]:checked').map(function (c) { return c.value; });
     var utils = utilOn ? $$('[name="utilities[]"]:checked').map(function (c) { return c.value; }) : [];
-    var extraDetail = [];
-    if ($('#addCarpet').checked) extraDetail.push('Carpets: ' + val('carpet_bedrooms') + ' bedrooms, ' + val('carpet_living') + ' living rooms');
-    if ($('#addWin').checked && form.elements.windows_count.value) extraDetail.push('Outside windows: about ' + form.elements.windows_count.value);
-    if ($('#addWall').checked && form.elements.walls_count.value) extraDetail.push('Walls: about ' + form.elements.walls_count.value);
 
     track('quote_step2_complete', { clean_type: val('clean_type'), move: moveOn, utilities: utilOn, addons: addons.length, lead_status: 'complete' });
 
@@ -627,36 +624,37 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
       location.href = 'thank-you.html?id=' + encodeURIComponent(idField.value || 'PREVIEW');
       return;
     }
-    // Live: without a real lead id from step 1 there's nothing to update, so send them back to step 1.
-    if (!/^\d+$/.test(idField.value)) { location.href = './#quote'; return; }
+    // Live: without a lead reference from step 1 there's nothing to update, so send them back to step 1.
+    // insert.php finds the lead through this browser's session and updates that same record.
+    if (!/^C4U-[A-Z0-9-]+$/.test(idField.value)) { location.href = './#quote'; return; }
 
     var fd = new FormData(form);
     fd.append('detail', '');
-    // Everything also goes into the existing info field, so it reaches the admin email and CRM before new columns exist.
-    var info = ['Clean: ' + t,
-      'Date: ' + (unsure.checked ? 'Not sure yet' : date.value.split('-').reverse().join('/')),
-      'Property: ' + val('property_type') + ', ' + val('bedrooms') + ' bed, ' + val('bathrooms') + ' bath'];
-    if (addons.length) info.push('Extras: ' + addons.join(', '));
-    if (extraDetail.length) info.push(extraDetail.join('; '));
-    if (moveOn) info.push('COMBINED BOOKING: move added (10% off). Moving ' + ($('#moveDate').value ? $('#moveDate').value.split('-').reverse().join('/') : 'date TBC') +
-      ($('#otherSub').value.trim() ? ', ' + $('#otherLbl').textContent.toLowerCase() + ' ' + $('#otherSub').value.trim() : ''));
-    if (utilOn) info.push('Utilities: ' + utils.join(', '));
-    var notes = (fd.get('notes') || '').toString().trim();
-    if (notes) info.push('Notes: ' + notes);
-    fd.set('info', info.join(' | ').slice(0, 255));
-    // insert.php builds its SQL from raw text, so a straight apostrophe or backslash would make it fail.
-    fd.forEach(function (v, k) { if (typeof v === 'string') fd.set(k, v.replace(/'/g, '’').replace(/\\/g, '/')); });
-
     var err = $('#goErr');
     err.hidden = true;
     btn.disabled = true; btn.textContent = 'Sending…';
-    fetch('/insert.php', { method: 'POST', body: fd, credentials: 'same-origin' }).then(function (r) {
-      if (!r.ok || !/\/thankyou(time)?\?/.test(r.url)) throw new Error('not saved');
-      location.href = 'thank-you.html?id=' + encodeURIComponent(idField.value);
-    }).catch(function () {
-      err.textContent = 'Sorry, we couldn’t send your details. Please try again or call 03 7042 9778.';
+    function fail(msg, restart) {
+      err.textContent = msg || 'Sorry, we couldn’t send your details. Please try again or call 03 7042 9778.';
+      if (restart) {
+        var a = document.createElement('a');
+        a.className = 'link'; a.href = './#quote'; a.textContent = 'Start again';
+        err.appendChild(document.createTextNode(' ')); err.appendChild(a);
+      }
       err.hidden = false; btn.disabled = false; btn.textContent = btnLabel;
-    });
+    }
+    C4U.post(fd).then(function (d) {
+      if (d.ok) { location.href = 'thank-you.html?id=' + encodeURIComponent(d.lead_ref || idField.value); return; }
+      // Field errors from the server use the same inline messages as the checks above.
+      var boxes = { clean_type: '#fType', clean_date: '#fDate', suburb: '#fSuburb', property_type: '#fProp', bedrooms: '#fBed', bathrooms: '#fBath', carpet_bedrooms: '#fCarpetBed', carpet_living: '#fCarpetLiv' };
+      var firstBad = null, other = [];
+      Object.keys(d.errors || {}).forEach(function (k) {
+        var box = boxes[k] && $(boxes[k]);
+        if (box) { $('.err', box).textContent = d.errors[k]; setErr(box, true); firstBad = firstBad || box; }
+        else other.push(d.errors[k]);
+      });
+      fail(other.length ? other.join(' ') : d.message, d.code === 'no_lead');
+      if (firstBad) firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }).catch(function () { fail(); });
   });
   window.addEventListener('pageshow', function () { btn.disabled = false; btn.textContent = btnLabel; });
 })();
